@@ -1,0 +1,429 @@
+Linux  lesson
+
+/////////////////
+
+
+
+user: admin
+password:eve
+Html5 consloe
+
+user:root
+password:Test123
+
+////////
+username: sysadmin
+password: 123
+
+root
+sysadmin@123
+
+pwd  = ຢາກຮູ້ວ່າເຮົາຢູ່ບ່ອນໃດ
+
+ls /  =  ເບີ່ງ directory ທັງໝົດ
+{
+ls a1
+ls a2
+}
+
+cd = ເຂົ້າໃປ directory ອື່ນ
+{
+cd ../../     = (../=ອອກເທື່ອລະdirectory)
+}
+
+ls = ເບີ່ງຂໍ້ມູນໃນ directory ປະຈຸບັນ
+ls -l = ເບີ່ງລາຍລະອຽດ directory
+
+ls -a = ເບີ່ງຂໍ້ມູນໃນ directory ທັງໝົດ
+{
+ls -a
+ls cha/ -a (ເຮົາຢູ່ homeແຕ່ຢາກກວດເບີ່ງcha)
+}
+
+mkdir = ສ້າງ directory ໃໝ່
+{
+mkdir test1 test2 test3
+mkdir test1/test2/test3 -p
+mkdir -p d1/{a1,a2,a3/{b1,b2/{c1/{d1,d2}}}} 
+}
+
+rm -rf = ລືບ directory (can delete directory of file)
+{
+rm -rf test1
+rm -rf test2 test3
+rm -rf * = ລືບ directory ທັງໝົດ
+}
+
+mv = ປ່ຽນຊື່
+{
+mv a1 a2
+}
+
+cp = copy
+{
+cp -R D2 /root 
+cp -r /home/d2 .
+cp -r /home/d2 /root
+cp f1.txt /root/
+}
+
+mv = move 
+{
+mv /home/d2 /root
+}
+
+touch = ສ້າງfile
+{
+touch f1.txt f2.pdf f3.xlxs
+}
+
+
+ສິດທິ
+rwxr-xr-x          rwx    r-x     r-x         755
+                   owner  Group   other
+r = read = 4
+w = write = 2
+x = execute(run) = 1
+- = nopermission = 0
+
+chmod = ຄຳສັ່ງປ່ຽນສິດ
+400
+777
+{
+chmod 400 f1.txt
+}
+
+chown = ປຽ່ນເຈົ້າຂອງ
+{
+chown cha f1.txt
+chown -R cha:It f1.txt =   
+}
+
+groundadd = ສ້າງກຸ່ມ
+{
+
+
+chgrp = ປ່ຽນກຸ່ມ
+{
+
+
+
+////////// week 2 create file /////////////
+
+
+
+
+
+
+vim f1.txt // ເຂົ້າໄປໃນfile
+press i or a
+
+press ESC
+save = (
+shift zz
+:w! Enter   
+:x Enter
+)
+/////// save and unsave ///////
+cat f1.txt  ກວດເບີ່ງ
+
+press ESC
+unsave(
+:q!  Enter
+)
+
+prees x  =  delete a single character
+
+press u = undo   or = ctrl + z
+
+press dd = delete all at line
+
+press 3dd = delete all downd
+
+press dgg = delete all to up
+
+press dG = delete all
+
+press d$  = delete some of the line frome right hand to left hand
+
+press d^ = delete some of the line frome left hand to right hand
+
+
+////// copy and past in file //////
+press ESC
+copy = yy
+copy 4 line = 4yy
+past = p
+:set nu /or/ :set number = ຕັ້ງໃຫ້ມີໂຕເລກໃນແຕ່ລະແຖວ
+:set nonumber /or/ :set num! ຕັ້ງໃຫ້ບໍ່ມີໂຕເລກໃນແຕ່ລະແຖວ
+[[ gg = ລົງລຸ່ມສຸດ
+]] G
+
+///////////// change character //////////////
+%s/linux/python/c  = ປ່ຽນlinuxເປັນpython ຕ້ອງໄດ້ yes ແຕ່ລະໂຕ
+%s/linux/python/g  = ປ່ຽນlinuxເປັນpythonທຸກໂຕ
+
+cat f1.txt = ຈະເຫັນຂໍ້ຄວາມທີ່ຂຽນຢູ່ໃນ f1.txt
+wc f1.txt = ສະແດງ line,word,byte in the file
+wc f1.txt -m  = ສະແດງ byte
+wc f1.txt -l  = ສະແດງ line
+wc f1.txt -w  = ສະແດງ word
+truncate -s 0 f1.txt = ລົບທັງໝົດ line,word,byte ໃນ f1.txt
+echo -n > f1.txt  =  ລົບທັງໝົດ line,word,byte ໃນ f1.txt
+
+////////////////  copy imformation from flie to other file    ///////////////////
+cat f2.txt >> f1.txt = copy ຂໍ້ຄວາມ f2.txt ໃຫ້ f1.txt
+history | less = ເບີ່ງຄຳສັ່ງທັງໝົດທີ່ເຄີຍຂຽນ
+history > command.txt   =  ເອົາຄຳສັ່ງທັງໝົດໄປເກັບໃນcommand.txt
+
+
+ເອົາຄຳສັ່ງທີ່ຂື້ນຕົ້ນດ້ວຍ vim ມາໄວ້ໃນ file vim.txt
+
+
+truncate -s 0 f2.txt  =  ລືມຂໍ້ມູນທັງໝົດໃນ  f2.txt ໂດຍທີ່ຍັງຢູ່ນອກ
+cat f1.txt >> f2.txt  =  copy ຂໍ້ມູນ ຈາກf1.txt  ວາງໄວ້ໃນ  f2.txt
+
+
+////////////// week 3 /////////////////
+
+
+
+grep 'book' text.txt  =  ເບີ່ງວ່າໃນtext.txtມີຄຳວ່າbookບໍ
+grep '(' text.txt = (ຖ້າເປັນເຄື່ອງໝາຍພິເສດຕ້ອງມີ  "") ເບີ່ງວ່າໃນtext.txtມີຄຳວ່າ ( ບໍ
+grep '\\' text.txt  = (ແຕ່ຕ້ອງມີ \\ ສອງເທື່ອ)  ເບີ່ງວ່າໃນtext.txtມີຄຳວ່າ \ ບໍ 
+
+grep '123' text.txt
+grep '0-9' text.txt    =   ສະແດງໂຕເລກ
+grep '[0-9]' text.txt
+grep '[0-9a-z]' text.txt  =  ສະແດງໂຕເລກແລະໂຕໜັງສື
+
+grep '[a-z]\+\.[a-z]\{2,\}' text.txt           =  [a-z] ເອົາຕັ້ງແຕ່[a ຮອດ z]     ເຊື່ອມຕໍ່ໃຫ້ກັບ  +\    {2,\}ສອງໂຕຂື້ນໄປ
+grep '[a-z]\+\@[a-z]\+\.[a-z]\{2,\}' text.txt =    ວິທີສະແດງ addgamil.com
+grep -E '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-=]+\.[a-zA-Z]{2,}' text.txt |wc -l  = ທັງໝົດມີຈັກອັນ
+
+
+
+//////////////////  week 4  /////////////////////////
+
+
+
+shell script
+
+source test.sh = ສະແດງຂໍ້ມູນໃນ test.sh ທັງໝົດອອກມາ
+chmod 700 test.sh
+chmod 755 test.sh
+
+
+echo "name: $0"
+echo "lastname: $1"               ການສ້າງໂຄງສ້າງທີ່ສາມາດປ້ອນຂໍ້ມູນໃຫ້ໄດ້
+echo "gru: $@"
+
+if mkdir /root/tempdir ; then
+echo "susess"
+else                                                           ການສ້າງໃຟໃນ script
+echo "could not create temp"
+fi
+
+if rm -rf /root/tempdir ; then       ການລົບໃຟໃນ script
+echo "susess"
+else
+echo "could not create temp"
+fi
+
+////////////////
+
+file="/home/f3.txt"
+
+if [ -f "$file" ]; then
+    echo "The file $file exists."
+else
+    echo "The directory $dd does not exist."
+fi
+
+/////////////
+if[-d $1]; then
+   echo "The file $file exists"
+else 
+   mkdirn$1
+   echo "the directory is $1 has been created
+/////////////////
+
+
+output_file="command.txt"
+history > "$output_file"
+echo "command history saved to command"
+
+
+//////////   loop number  /////////////************
+
+i=1
+while [$i -le i]
+/////////
+
+for i in `seq 1 $1`
+do
+echo $i
+done
+
+
+mkdir $1
+for i in `seq 1 $2`
+do
+echo :"Linux" >$1/f$i.txt
+echo $i
+done
+echo "done /f$i.txt"
+  
+
+/////////////////////
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <directory_name> <number_of_files>"
+    exit 1
+fi
+
+# Create the directory if it does not exist
+
+mkdir -p "$1"
+
+# Loop to create files
+for i in $(seq 1 $2)
+do
+    echo "linux" > "$1/F$i.txt"
+    echo "Created $1/F$i.txt"
+done
+
+echo "Done"
+
+/////////////////// week6 /////////////////
+
+
+
+
+echo -n "enter the value:"              
+read my_var
+echo"the value is: $my_var"
+
+ວິທີ run file**********************
+root@web:~# vim read.sh
+root@web:~# chmod 700 read.sh
+root@web:~# ./read.sh
+**********************************
+
+echo -n "Select the Option"
+1 Add user
+2 Delete user
+3 Change password
+4 Exit
+echo "Choose your Option: $"
+
+ cut -d: -f1 /etc/passwd       ==     ສະແດງສະເພາະຊື່  users
+
+/////////////////////////////////////////////////////////////////
+echo "Select the Option"
+echo "0) show all user"
+echo "1) Add user"
+echo "2) Delete user"
+echo "3) Change password"
+echo "4) Exit"
+
+echo -n "Choose your Option: "
+read option
+
+case $option in
+  0) echo "You selected: show all users"
+  cut -d: -f1 /etc/passwd ;;
+  1) echo "You selected: Add user" ;;
+  2) echo "You selected: Delete user" ;;
+  3) echo "You selected: Change password" ;;
+  4) echo "Exiting..." ;;
+  *) echo "Invalid option. Please select 1, 2, 3, or 4." ;;
+esac
+//////////////////////////////////////////////////////////////////
+while true ; do
+        clear
+    echo " User Management System"
+        echo "[1] Show all users"
+        echo "[2] Add user"
+        echo "[3] Delete user"
+        echo "[4] Change password"
+        echo "[5] Exit"
+        echo -n "Choose your ooption: "
+        read num
+
+        case $num in
+                1)
+                        echo -n "List of users"
+                        cut -d: -f1 /etc/passwd
+                        ;;
+                2)
+                         echo -n "Enter new username: "
+                         read addname
+                         useradd -m $addname -s /bin/bash
+                         ;;
+                3)
+                        echo -n "Enter username to delete: "
+                        read delname
+                        userdel -r $delname
+                        ;;
+                4)
+                        echo -n "Enter username to change password: "
+                        read chname
+                        passwd $chaname
+                        ;;
+                5)
+                        echo "Exiting..."
+                        exit 0
+                        ;;
+                *)
+                        echo "Invalid input. Please try again"
+        esac
+        echo "Press enter to continue ..."
+        read
+done
+///////////////////////////////////////////////////////////////////////
+
+timedatectl set-timezone Asia/Vientiane       ==          ຄຳສັ່ງປ່ຽນເວລາຕາມບ້ານເຮົາ
+
+
+date "+%A"  ==   ວັນທີ່
+date "+%D"    ==  ມື້
+date "+%T"   ==   ເວລາ
+
+apt install ncal
+cal 2025 -m 3       ==          ເບີ່ງປະທິທີນ
+
+*********************
+crontab -e
+2
+* * * * * echo "Hello World at $(date)" >> $HOME/greeting.txt    ==    ທຸກນາທີມັນຈະສ້າງຄຳວ່າ Hello World ຢູ່ໃນ greeting.tx
+root@web:~# cat /root/greeting.txt  ==   run file
+*********************
+ການສ້າງ  user
+adduser   == bash
+useradd   == sh            =>   useradd @sai -m -s /bin        ຖ້າຢາກໃຫ້ໄດ້ຄື adduser
+
+ການກວດເບີ່ງ user
+cat/etc user
+
+ການລືມ user
+userdel -r
+userdel -r devsai
+
+ສ້າງ
+groupadd It
+
+ກວດ
+cat / ect/group
+cut -d
+
+ລືມ
+groupdel
+
+ເອົາuserເຂົ້າກຸ່ມ
+usermod -g it user7
+useradd -g it user7 -m -s /bin/bash    ສ້າງມາໃໝ່
+
+ກວດ 
+groups user7
+
+members it  //apt install members

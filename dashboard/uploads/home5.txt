@@ -1,0 +1,13 @@
+1/ select location_id,street_address,city,state_province,country_name from locations NATURAL JOIN countries;
+2/ select e.last_name,e.department_number,d.department_name from employees e JOIN departments d on e.department_id = d.department_id;
+3/ select e.last_name,e.job,d.department_number,d.department_name from employees e JOIN department d on e.department_id = d.department_id JOIN location l on d.location_id = l.location_id where l.city = 'Toronto'
+4/ SELECT e.last_name AS "Employee",e.employee_id AS "Emp#",m.last_name AS "Manager", m.employee_id AS "Mgr#" FROM employees e LEFT JOIN employees m ON e.manager_id = m.employee_id;
+5/ SELECT * FROM employees ORDER BY employee_number;
+6/ SELECT e1.last_name AS "Employee",e1.department_id AS "Department",e2.last_name AS "Colleague" FROM employees e1 JOIN employees e2 ON e1.department_id = e2.department_id WHERE 
+    e1.employee_id <> e2.employee_id ORDER BY e1.department_id, e1.last_name;
+7/ SELECT e.name AS "Employee Name",e.job_id AS "Job",d.department_name AS "Department",e.salary AS "Salary",j.grade AS "Grade" FROM employees e JOIN departments d ON e.department_id = d.department_id JOIN job_grades j ON e.job_id = j.job_id ORDER BY  e.name;
+8 /SELECT e.name AS "Employee Name",e.hire_date AS "Hire Date"FROM 
+    employees WHERE e.hire_date > (SELECT hire_date FROM employees WHERE name = 'Davies')ORDER BY e.hire_date;
+9/ SELECT e.name AS "Employee Name",e.hire_date AS "Employee Hire Date",m.name AS "Manager Name",
+    m.hire_date AS "Manager Hire Date" FROM employees e JOIN employees m ON e.manager_id = m.employee_id WHERE e.hire_date < m.hire_date ORDER BY e.hire_date;
+

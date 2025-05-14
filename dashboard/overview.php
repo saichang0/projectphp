@@ -35,7 +35,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
         $fileSize = $_FILES['file']['size'];
         $fileType = $_FILES['file']['type'];
 
-        $targetDir = "uploads/"; // Ensure this directory exists and is writable
+        $targetDir = "uploads/";
         $targetPath = $targetDir . basename($fileName);
 
         $targetDir = "uploads/";
@@ -45,16 +45,43 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
         $userId = $_SESSION['user_id'];
         $categoryId = $_POST['category_id'] ?? null;
 
+        // Fetch user status from the database
+        $sql = "SELECT status FROM users WHERE id = :userId";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':userId' => $userId]);
+        $user = $stmt->fetch();
+        if (!$user) {
+            die("User not found.");
+        }
+
+        if ($user['status'] !== 'active') {
+            echo "<script>alert('You are inactive and cannot upload files.'); window.history.back();</script>";
+            exit;
+        }
+        var_dump($_POST['category_id']); // Debug
+        var_dump($categoryId); // Debug
+
+        // Check if category exists
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM document_categories WHERE id = :category_id");
+        $stmt->execute(['category_id' => $categoryId]);
+        $categoryExists = $stmt->fetchColumn();
+
+        if (!$categoryExists) {
+            $msg = "❌ Invalid category selected.";
+            echo $msg;
+            exit;
+        }
+
         if (!file_exists($targetDir)) {
             mkdir($targetDir, 0777, true);
         }
 
         if (move_uploaded_file($fileTmpName, $targetPath)) {
             $stmt = $pdo->prepare("
-                INSERT INTO documents 
-                    (user_id, file_name, file_path, file_type, file_size, uploaded_by, category_id) 
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ");
+        INSERT INTO documents 
+        (user_id, file_name, file_path, file_type, file_size, uploaded_by, category_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
             $stmt->execute([
                 $userId,
                 $fileName,
@@ -68,6 +95,8 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] == 0) {
         } else {
             $msg = "File upload failed.";
         }
+
+        echo $msg;
     }
 }
 
@@ -122,12 +151,12 @@ if ($result) {
 }
 $previous_total_documents = 100;
 if ($previous_total_documents > 0) {
-    $percent_change = (($total_document - $previous_total_documents) / $previous_total_documents) * 100;
+    $percent_document_change = (($total_document - $previous_total_documents) / $previous_total_documents) * 100;
 } else {
-    $percent_change = 0;
+    $percent_document_change = 0;
 }
-$percent_class = $percent_change >= 0 ? 'text-green-500' : 'text-red-500';
-$percent_document = $percent_change >= 0 ? '+' : '';
+$percent_class = $percent_document_change >= 0 ? 'text-green-500' : 'text-red-500';
+$percent_document = $percent_document_change >= 0 ? '+' : '';
 
 // Fetch all users with profile images
 try {
@@ -136,6 +165,22 @@ try {
 } catch (PDOException $e) {
     echo "❌ Database connection failed: " . $e->getMessage();
     exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $categoryName = $_POST['category'];
+    if (!empty($categoryName)) {
+        $checkStmt = $pdo->prepare("SELECT id FROM document_categories WHERE name = :name");
+        $checkStmt->execute([':name' => $categoryName]);
+        $existingCategory = $checkStmt->fetch();
+        if (!$existingCategory) {
+            $insertStmt = $pdo->prepare("INSERT INTO document_categories (name, description) VALUES (:name, :desc)");
+            $insertStmt->execute([
+                ':name' => $categoryName,
+                ':desc' => 'Uploaded from form'
+            ]);
+        }
+    }
 }
 
 ?>
@@ -152,8 +197,8 @@ try {
 
 <body class="bg-gray-100 font-sans">
 
-    <?php include './partials/header.php'; ?>
-    <?php include './partials/sidebar.php'; ?>
+    <?php include '../partials/header.php'; ?>
+    <?php include '../partials/sidebar.php'; ?>
 
     <div class="ml-64 p-6 bg-gray-50 mt-16 max-h-screen">
         <div class="flex items-start justify-between">
@@ -185,7 +230,7 @@ try {
                                     <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5" />
                                 </svg>
                                 <span class="<?= $percent_class ?> text-sm">
-                                    <?= $percent_document . number_format($percent_change, 1) ?>%
+                                    <?= $percent_document . number_format($percent_document_change, 1) ?>%
                                 </span>
                             </div>
                             <div class="p-3 bg-blue-600 border w-fit rounded-md">
@@ -207,13 +252,13 @@ try {
                                     <?= $percent_sign . number_format($percent_change, 1) ?>%
                                 </span>
                             </div>
-                            <div class="flex gap-1">
+                            <div class="flex gap-1 -space-x-4">
                                 <?php foreach ($all_users as $user): ?>
                                     <div class="flex items-center">
                                         <img
-                                            src="login/<?= htmlspecialchars($user['profile_image']) ?>"
+                                            src="../login/<?= htmlspecialchars($user['profile_image']) ?>"
                                             alt="profile"
-                                            class="rounded-full w-8 h-8">
+                                            class="rounded-full w-10 h-10">
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -226,26 +271,57 @@ try {
                         </div>
                     </div>
 
-                    <div class="bg-white shadow rounded-xl p-6 mb-6 w-full">
-                        <div class="flex justify-start items-center gap-40">
-                            <h3 class="text-lg font-semibold mb-4">Upload Files</h3>
-                            <?php if (isset($msg)) : ?>
-                                <p id="flash-message" class="text-sm mt-4 <?= str_starts_with($msg, '✅') ? 'text-red-600' : 'text-green-600' ?>">
-                                    <?= htmlspecialchars($msg) ?>
-                                </p>
-                            <?php endif; ?>
-                        </div>
-
-                        <form method="POST" enctype="multipart/form-data" class="w-full" action="">
+                    <div x-data="{ open: false }" open="true" class="relative w-full">
+                        <div @click="open = true" class="bg-white shadow rounded-xl p-6 mb-6 w-full">
+                            <div class="flex justify-start items-center gap-40">
+                                <h3 class="text-lg font-semibold mb-4">Upload Files</h3>
+                                <?php if (isset($msg)) : ?>
+                                    <p id="flash-message" class="text-sm mt-4 <?= str_starts_with($msg, '✅') ? 'text-red-600' : 'text-green-600' ?>">
+                                        <?= htmlspecialchars($msg) ?>
+                                    </p>
+                                <?php endif; ?>
+                            </div>
                             <label class="flex flex-col border-dashed border-2 border-orange-500 rounded-xl p-10 text-center justify-center items-center w-full bg-white shadow cursor-pointer">
                                 <svg for="file-upload" xmlns="http://www.w3.org/2000/svg" class="w-24 h-24 text-orange-500 mb-4" fill="currentColor" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z" />
                                     <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383m.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z" />
                                 </svg>
                                 <p>Drop files here or <span class="text-orange-600 underline cursor-pointer">Browse</span></p>
-                                <input id="file-upload" name="file" type="file" class="hidden" onchange="this.form.submit()" />
                             </label>
-                        </form>
+                        </div>
+                        <div x-show="open" x-transition class=" absolute inset-0 flex items-center justify-center z-50">
+                            <div @click.away="open = false" class="bg-white w-96 p-6 rounded-xl shadow-xl relative">
+                                <button @click="open = false" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold">
+                                    &times;
+                                </button>
+                                <h2 class="text-xl font-bold mb-4">Upload Document</h2>
+                                <form method="POST" enctype="multipart/form-data" action="">
+                                    <div class="mb-4">
+                                        <label for="category_id">Select category:</label>
+                                        <select name="category_id" id="category" required>
+                                            <?php
+                                            $categories = $pdo->query("SELECT id, name FROM document_categories")->fetchAll();
+                                            foreach ($categories as $category) {
+                                                echo '<option value="' . $category['id'] . '">' . htmlspecialchars($category['name']) . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <label class="flex flex-col border-dashed border-2 border-orange-500 rounded-xl p-6 items-center justify-center cursor-pointer text-center mb-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-orange-500 mb-2" fill="currentColor" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd" d="M7.646 5.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708z" />
+                                            <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383" />
+                                        </svg>
+                                        <p>Drop file or <span class="text-orange-600 underline">Browse</span></p>
+                                        <input name="file" type="file" class="hidden" required />
+                                    </label>
+
+                                    <button type="submit" class="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600">
+                                        Upload
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="bg-white shadow rounded-xl p-6 w-full">
@@ -299,7 +375,7 @@ try {
             </div>
         </div>
 
-        <?php include 'partials/footer.php'; ?>
+        <?php include '../partials/footer.php'; ?>
 
         <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
@@ -307,7 +383,7 @@ try {
             setTimeout(() => {
                 const msg = document.getElementById('flash-message');
                 if (msg) msg.style.display = 'none';
-            }, 800);
+            }, 1000);
         </script>
 
         <script>
@@ -368,6 +444,7 @@ try {
             var chart2 = new ApexCharts(document.querySelector("#lineChart"), lineOptions);
             chart2.render();
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 </body>
 

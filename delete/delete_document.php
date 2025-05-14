@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once './document_db.php';
+require_once '../document_db.php';
 
 if (!isset($_GET['id'])) {
     echo "❌ No document ID provided.";
@@ -38,3 +38,4 @@ try {
     echo "❌ Error: " . $e->getMessage();
     exit;
 }
+

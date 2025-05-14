@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../document_db.php");
+include("../dashboard/document_db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = trim($_POST['email']);
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user'] = $row['email'];
             $_SESSION['id'] = $row['id'];
             $_SESSION['user_id'] = $row['id'];
-            header('Location: /project/overview.php');
+            header('Location: /project/dashboard/overview.php');
             exit();
         } else {
             $msg = "Incorrect email or password!";
